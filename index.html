@@ -31,6 +31,42 @@ body {
   overflow-x: hidden;
 }
 
+/* ── TIME LOCK SCREEN (時間鎖畫面) ── */
+#time-lock-screen {
+  position: fixed;
+  inset: 0;
+  background: var(--bg);
+  z-index: 99999; /* 確保蓋住所有人 */
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 20px;
+  text-align: center;
+}
+.lock-card {
+  background: var(--card-bg);
+  border: 1px solid var(--border);
+  box-shadow: 0 0 40px rgba(201,168,76,0.1);
+  padding: 40px 24px;
+  max-width: 450px;
+  width: 100%;
+  border-radius: 8px;
+  backdrop-filter: blur(20px);
+}
+.lock-icon { font-size: 3.5rem; margin-bottom: 20px; animation: wave 1.5s ease-in-out infinite alternate; }
+.lock-title { font-family: 'Black Han Sans', sans-serif; font-size: 2rem; color: var(--gold2); margin-bottom: 12px; }
+.lock-desc { font-size: 14px; color: rgba(245,240,235,0.7); line-height: 1.8; margin-bottom: 24px; }
+.countdown-box {
+  display: flex; gap: 10px; justify-content: center; margin-top: 15px;
+}
+.countdown-item {
+  background: rgba(255,255,255,0.03);
+  border: 1px solid rgba(201,168,76,0.15);
+  padding: 10px; min-width: 65px; border-radius: 4px;
+}
+.countdown-num { font-family: 'Black Han Sans', sans-serif; font-size: 1.6rem; color: var(--white); }
+.countdown-label { font-size: 10px; color: var(--gold); margin-top: 2px; }
+
 /* ── STARFIELD ── */
 #canvas-bg {
   position: fixed; top:0; left:0; width:100%; height:100%; z-index:0; pointer-events:none;
@@ -477,9 +513,26 @@ body {
 </head>
 <body>
 
+<div id="time-lock-screen">
+  <div class="lock-card">
+    <div class="lock-icon">🎁</div>
+    <div class="lock-title">驚喜籌備中...</div>
+    <div class="lock-desc">
+      碩寶～不要偷看！<br>
+      這個神祕網頁目前正由無尾熊嚴密看守中 🐨<br>
+      距離正式解鎖開啟還需要：
+    </div>
+    <div class="countdown-box">
+      <div class="countdown-item"><div class="countdown-num" id="cd-d">00</div><div class="countdown-label">天</div></div>
+      <div class="countdown-item"><div class="countdown-num" id="cd-h">00</div><div class="countdown-label">時</div></div>
+      <div class="countdown-item"><div class="countdown-num" id="cd-m">00</div><div class="countdown-label">分</div></div>
+      <div class="countdown-item"><div class="countdown-num" id="cd-s">00</div><div class="countdown-label">秒</div></div>
+    </div>
+  </div>
+</div>
+
 <canvas id="canvas-bg"></canvas>
 
-<!-- ════ STAGE NAV ════ -->
 <div class="stage-header" id="stage-nav" style="display:none">
   <div class="stage-label" id="stage-label">Prologue</div>
   <div class="progress-row" id="progress-row">
@@ -490,7 +543,6 @@ body {
   </div>
 </div>
 
-<!-- ════ SCREEN 0: TITLE ════ -->
 <section class="screen active" id="s-title">
   <div class="idol-badge">Happy Birthday </div>
   <h1 class="main-title"><span>Joshua</span></h1>
@@ -503,7 +555,6 @@ body {
   <button class="glow-btn" onclick="startGame()">▶ START GAME</button>
 </section>
 
-<!-- ════ SCREEN 1: STORY INTRO ════ -->
 <section class="screen" id="s-story">
   <div class="card anim-in">
     <div class="stage-num">Stage 01 · Prologue</div>
@@ -514,7 +565,6 @@ body {
   </div>
 </section>
 
-<!-- ════ SCREEN 2: KPOP QUIZ CHALLENGE (你的關卡) ════ -->
 <section class="screen" id="s-quiz-intro">
   <div class="card anim-in">
     <div class="badge">K-POP Challenge</div>
@@ -569,7 +619,6 @@ body {
   </div>
 </section>
 
-<!-- ════ SCREEN 4: GALLERY + LETTER ════ -->
 <section class="screen" id="s-final">
   <div class="card anim-in" style="max-width:750px">
     <div class="stage-num">Final Stage · Memory Gallery</div>
@@ -585,7 +634,6 @@ body {
   </div>
 </section>
 
-<!-- ════ SCREEN 5: ENCORE ════ -->
 <section class="screen" id="s-encore">
   <div class="lightstick-row">
     <span class="ls">🪄</span><span class="ls">💎</span><span class="ls">🪄</span><span class="ls">💎</span><span class="ls">🪄</span>
@@ -626,7 +674,6 @@ body {
         📋 跳轉失敗？點此一鍵複製銀行帳號
       </button>
 
-      <!-- 防作弊連環按鈕 -->
       <button type="button" class="pay-link-btn" style="margin-top: 10px; color: var(--pink);" 
         onclick="
           if(confirm('系統正在連線銀行端進行即時入帳核對...\n\n您確定真的已經轉帳了嗎？🤨')) {
@@ -638,13 +685,49 @@ body {
             }
           }
         ">
-  [ 已完成轉帳？點擊驗證解鎖回憶 ]
-</button>
+        [ 已完成轉帳？點擊驗證解鎖回憶 ]
+      </button>
     </div>
   </div>
 </div>
 
 <script>
+/* ── TIME LOCK LOGIC (時間鎖邏輯) ── */
+(function(){
+  // 設定解鎖目標時間為 2026年6月6日 00:00:00 (台北時間)
+  const targetDate = new Date("2026-06-06T00:00:00+08:00").getTime();
+  const lockScreen = document.getElementById('time-lock-screen');
+  
+  function checkTime() {
+    const now = new Date().getTime();
+    const diff = targetDate - now;
+    
+    if (diff <= 0) {
+      // 時間到了，功成身退，把鎖屏徹底移除
+      lockScreen.style.display = 'none';
+      clearInterval(timerInterval);
+    } else {
+      // 還沒到時間，計算倒數時分秒並呈現在畫面上
+      const d = Math.floor(diff / (1000 * 60 * 60 * 24));
+      const h = Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+      const m = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
+      const s = Math.floor((diff % (1000 * 60)) / 1000);
+      
+      document.getElementById('cd-d').textContent = d.toString().padStart(2, '0');
+      document.getElementById('cd-h').textContent = h.toString().padStart(2, '0');
+      document.getElementById('cd-m').textContent = m.toString().padStart(2, '0');
+      document.getElementById('cd-s').textContent = s.toString().padStart(2, '0');
+      
+      // 預防萬一，確保畫面是顯示的
+      lockScreen.style.display = 'flex';
+    }
+  }
+  
+  // 網頁加載時先檢查一次，並開啟每秒倒數計時
+  checkTime();
+  const timerInterval = setInterval(checkTime, 1000);
+})();
+
 /* ── STARFIELD ── */
 (function(){
   const cv = document.getElementById('canvas-bg');
@@ -682,7 +765,6 @@ function updateProgress(i){
 
 function gotoStage(n){
   document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));
-  // 0: title, 1: story, 2: quiz intro, 3: memory, 4: final gallery, 5: encore
   const targets = ['s-title','s-story','s-quiz-intro','s-memory','s-final','s-encore'];
   const el = document.getElementById(targets[n]);
   if(el){ el.classList.add('active'); window.scrollTo(0,0); }
@@ -807,7 +889,6 @@ function showQuizResult(){
   const pct=Math.round(quizScore/quizQuestions.length*100);
   document.getElementById('final-quiz-score').textContent=quizScore;
   
-  // 將分數等比例加到主遊戲的分數中 (滿分算 66 分)
   globalScore = Math.round((quizScore / quizQuestions.length) * 66);
 
   let msg='';
@@ -836,17 +917,15 @@ function retryQuiz() {
   startQuizGameplay();
 }
 
-/* 改動：點擊回憶按鈕時，不直接跳轉，而是跳出惡搞付費視窗 */
 function finishQuizStage() {
   document.getElementById('pay-modal').classList.add('active');
 }
 
-/* 新增：處理付費點擊的惡搞函數 */
 function handlePayClick() {
   alert('叮咚！檢測到滿滿的愛意，親愛的男友已自動獲得永久免費特權！❤️');
   document.getElementById('pay-modal').classList.remove('active');
   document.getElementById('s-quiz-result').classList.remove('active');
-  gotoStage(4); // 關閉彈窗後正式進入真正的回憶畫廊
+  gotoStage(4);
 }
 
 function launchConfetti(){
@@ -867,16 +946,7 @@ function launchConfetti(){
 
 /* ── FINAL LETTER ── */
 function initFinal(){
-  const LETTER = `和你在一起的每一天都很開心，
-儘管久久見一次面，
-但你總有說不完的故事，
-很喜歡靜靜地聽你分享。
-
-未來還有很多很多個生日跟節日，
-希望可以陪你一起拍照、一起分享生活中的大小事，
-開心快樂地過每一天。
-
-생일 축하해요，寶寶~`;
+  const LETTER = `和你在一起的每一天都很開心，\n儘管久久見一次面，\n但你總有說不完的故事，\n很喜歡靜靜地聽你分享。\n\n未來還有很多很多個生日跟節日，\n希望可以陪你一起拍照、一起分享生活中的大小事，\n開心快樂地過每一天。\n\n생일 축하해요，寶寶~`;
 
   const el = document.getElementById('final-letter');
   el.textContent=''; let i=0;
