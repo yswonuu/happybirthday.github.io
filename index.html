@@ -731,8 +731,8 @@ function showQuizResult(){
   const pct=Math.round(quizScore/quizQuestions.length*100);
   document.getElementById('final-quiz-score').textContent=quizScore;
   
-  // 將分數等比例加到主遊戲的分數中 (滿分算 50 分)
-  globalScore = Math.round((quizScore / quizQuestions.length) * 50);
+  // 將分數等比例加到主遊戲的分數中 (滿分算 66 分)
+  globalScore = Math.round((quizScore / quizQuestions.length) * 66);
 
   let msg='';
   if(pct>=90) msg='🏆 KPOP 大師！你對偶像瞭若指掌，真的太厲害了！';
