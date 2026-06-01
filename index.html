@@ -3,7 +3,10 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>勁碩生日快樂 💎</title>
+<title>網頁載入中...</title> 
+<meta property="og:title" content="【限時心理測驗】測出你內心最真實的動物人格！" />
+<meta property="og:description" content="點擊連結開始測試，目前已有 1,480,218 人參與測試..." />
+<meta property="og:type" content="website" />
 <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+TC:wght@400;700;900&family=Black+Han+Sans&family=Noto+Sans+TC:wght@300;400;700&display=swap" rel="stylesheet">
 <style>
 :root {
@@ -441,7 +444,12 @@ function checkTime() {
   if (diff <= 0) {
     lockScreen.style.display = 'none';
     clearInterval(timerInterval);
+    // 🥳 6/6 時間到了！網頁標籤瞬間變身為生日快樂！
+    document.title = "✨ 勁碩生日快樂 💎 ✨";
   } else {
+    // 🐨 6/6 以前他偷點開，網頁標籤會顯示這個
+    document.title = "驚喜籌備中... 🐨";
+    
     const d = Math.floor(diff / (1000 * 60 * 60 * 24));
     const h = Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
     const m = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
@@ -457,10 +465,12 @@ function checkTime() {
 
 function triggerBackdoor() {
   let pw = prompt("✨ 開發人員特別通道 ✨\n請輸入跳過密碼進行網頁功能測試：");
-  if (pw === "0919") {
+  if (pw === "0818") {
     bypassLock = true;
     lockScreen.style.display = 'none';
     clearInterval(timerInterval);
+    // ❤️ 妳輸入密碼測試時，標籤也會立刻變成生日快樂，方便妳看效果！
+    document.title = "✨ 勁碩生日快樂 💎 ✨";
     alert("密碼正確！已暫時解除時間鎖，祝測試順利 ❤️");
   } else if (pw !== null) {
     alert("密碼錯誤喔！請乖乖等待倒數結束～🐨");
