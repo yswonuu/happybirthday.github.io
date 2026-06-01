@@ -436,6 +436,43 @@ body {
 .mb { margin-bottom: 16px; }
 .gold { color: var(--gold2); }
 .muted { color: rgba(245,240,235,0.45); font-size: 0.85rem; }
+
+/* ── CUSTOM PAY MODAL (惡搞付費彈窗) ── */
+.modal-overlay {
+  display: none;
+  position: fixed; inset: 0;
+  background: rgba(5, 4, 10, 0.85);
+  backdrop-filter: blur(8px);
+  z-index: 1000;
+  justify-content: center; align-items: center;
+  padding: 20px;
+}
+.modal-overlay.active { display: flex; }
+.pay-card {
+  background: #14121e;
+  border: 2px solid var(--red);
+  box-shadow: 0 0 30px rgba(232, 64, 96, 0.3);
+  border-radius: 8px;
+  max-width: 420px; width: 100%;
+  padding: 32px 24px;
+  text-align: center;
+  animation: fadeIn 0.3s ease-out;
+}
+.pay-icon { font-size: 3rem; margin-bottom: 16px; animation: wave 0.5s infinite alternate; }
+.pay-title { font-family: 'Black Han Sans', sans-serif; font-size: 1.8rem; color: var(--red); margin-bottom: 12px; }
+.pay-desc { font-size: 0.95rem; color: rgba(245,240,235,0.8); line-height: 1.8; margin-bottom: 24px; }
+.pay-btn-row { display: flex; flex-direction: column; gap: 12px; }
+.pay-primary-btn {
+  background: var(--red); border: none; color: white;
+  font-family: 'Noto Sans TC', sans-serif; font-weight: bold;
+  font-size: 16px; padding: 14px; cursor: pointer; border-radius: 4px;
+  transition: all 0.2s; box-shadow: 0 4px 12px rgba(232, 64, 96, 0.4);
+}
+.pay-primary-btn:hover { background: #ff5274; transform: translateY(-2px); }
+.pay-link-btn {
+  background: transparent; border: none; color: var(--muted);
+  font-size: 13px; cursor: pointer; text-decoration: underline;
+}
 </style>
 </head>
 <body>
@@ -567,6 +604,45 @@ body {
     可以打開盲盒了 🎁
   </div>
 </section>
+
+<div class="modal-overlay" id="pay-modal">
+  <div class="pay-card">
+    <div class="pay-icon">🔒</div>
+    <div class="pay-title">親密回憶已鎖定</div>
+    <div class="pay-desc">
+      因您剛才的 K-POP 答題表現，系統已將後續的「重要回憶畫廊」封印。<br><br>
+      請向 <strong style="color:var(--pink)">無尾熊</strong> 支付 <strong style="color:var(--gold2)">看你要多少解鎖囉</strong> 以解鎖限定劇情。<br>
+      <span class="muted" style="font-size: 11px;">(點擊下方按鈕將自動跳轉轉帳或開啟複製)</span>
+    </div>
+    
+    <div class="pay-btn-row">
+      <a href="https://apps.apple.com/app/id1664639200" target="_blank" style="text-decoration: none;">
+        <button type="button" class="pay-primary-btn" style="width: 100%; letter-spacing: 1px;">
+          💰 點擊立即跳轉轉帳解鎖
+        </button>
+      </a>
+
+      <button type="button" style="background: rgba(255,255,255,0.05); border: 1px dashed var(--gold); color: var(--gold2); font-size: 13px; padding: 10px; cursor: pointer; border-radius: 4px;" onclick="navigator.clipboard.writeText('94385002224100'); alert('帳號已成功複製到剪貼簿！\n(彰化銀行 009 帳號: 94385002224100)\n請碩寶自覺前往 App 儲值安太歲 🥰');">
+        📋 跳轉失敗？點此一鍵複製銀行帳號
+      </button>
+
+      <!-- 防作弊連環按鈕 -->
+      <button type="button" class="pay-link-btn" style="margin-top: 10px; color: var(--pink);" 
+        onclick="
+          if(confirm('系統正在連線銀行端進行即時入帳核對...\n\n您確定真的已經轉帳了嗎？🤨')) {
+            if(confirm('偵測到無尾熊的帳戶尚未收到通知！\n\n陳勁碩，你是不是想點這個按鈕偷跑？不準騙人喔！😤')) {
+              if(confirm('好啦，再給你最後一次誠實的機會。\n\n真的有轉帳安太歲了嗎？(點「取消」回去乖乖轉帳，點「確定」接受懲罰)')) {
+                alert('哼，看在今天是你的生日份上，小寶就大發慈悲原諒你的偷吃步！😘\n\n點擊「確定」正式為你特赦解鎖！❤️');
+                handlePayClick();
+              }
+            }
+          }
+        ">
+  [ 已完成轉帳？點擊驗證解鎖回憶 ]
+</button>
+    </div>
+  </div>
+</div>
 
 <script>
 /* ── STARFIELD ── */
@@ -760,9 +836,17 @@ function retryQuiz() {
   startQuizGameplay();
 }
 
+/* 改動：點擊回憶按鈕時，不直接跳轉，而是跳出惡搞付費視窗 */
 function finishQuizStage() {
+  document.getElementById('pay-modal').classList.add('active');
+}
+
+/* 新增：處理付費點擊的惡搞函數 */
+function handlePayClick() {
+  alert('叮咚！檢測到滿滿的愛意，親愛的男友已自動獲得永久免費特權！❤️');
+  document.getElementById('pay-modal').classList.remove('active');
   document.getElementById('s-quiz-result').classList.remove('active');
-  gotoStage(4); // 直接進入 Stage 04 真正的回憶畫廊與信件
+  gotoStage(4); // 關閉彈窗後正式進入真正的回憶畫廊
 }
 
 function launchConfetti(){
