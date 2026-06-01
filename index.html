@@ -376,7 +376,6 @@ body {
   </div>
 </section>
 
-<!-- ════ 惡搞付費彈窗 ════ -->
 <div class="modal-overlay" id="pay-modal">
   <div class="pay-card">
     <div class="pay-icon">🔒</div>
@@ -388,14 +387,23 @@ body {
     </div>
     
     <div class="pay-btn-row">
-      <a href="https://apps.apple.com/app/id1664639200" target="_blank" style="text-decoration: none;">
+      <a href="https://apps.apple.com/app/id1664639200" target="_blank" style="text-decoration: none;" onclick="recordLeaveTime()">
         <button type="button" class="pay-primary-btn" style="width: 100%; letter-spacing: 1px;">
-          💰 點擊立即跳轉轉帳解鎖
+          💰 點擊立即跳轉轉帳
         </button>
       </a>
 
-      <button type="button" style="background: rgba(255,255,255,0.05); border: 1px dashed var(--gold); color: var(--gold2); font-size: 13px; padding: 10px; cursor: pointer; border-radius: 4px;" onclick="navigator.clipboard.writeText('94385002224100'); alert('帳號已成功複製到剪貼簿！\n(彰化銀行 009 帳號: 94385002224100)\n請碩寶自覺前往 App 儲值安太歲 🥰');">
+      <button type="button" style="background: rgba(255,255,255,0.05); border: 1px dashed var(--gold); color: var(--gold2); font-size: 13px; padding: 10px; cursor: pointer; border-radius: 4px;" onclick="navigator.clipboard.writeText('94385002224100'); alert('帳號已成功複製到剪貼簿！\n(彰化銀行 009 帳號: 94385002224100)\n請碩寶自覺前往 App 儲值安太歲 🥰'); recordLeaveTime();">
         📋 一鍵複製銀行帳號
+      </button>
+
+      <button type="button" id="pay-success-btn" disabled class="glow-btn" 
+        style="margin-top: 12px; width: 100%; padding: 12px; font-size: 15px; border-color: #555; color: #777; background: rgba(255,255,255,0.02); cursor: not-allowed; transition: all 0.3s;"
+        onclick="
+          alert('（無尾熊正在瞇著眼睛核對帳戶... 🐨📱）\n\n逼逼──偵測到滿滿愛意的錢已即時入帳！\n算你識相啦！❤️');
+          handlePayClick();
+        ">
+        🔒 請先點擊上方按鈕前往轉帳
       </button>
 
       <!-- 防作弊連環按鈕 -->
@@ -406,7 +414,7 @@ body {
         onclick="
           if(confirm('系統正在連線銀行端進行即時入帳核對...\n\n您確定真的已經轉帳了嗎？🤨')) {
             if(confirm('偵測到無尾熊的帳戶尚未收到通知！\n\n陳勁碩，你是不是想點這個按鈕偷跑？不準騙人喔！😤')) {
-              if(confirm('好啦，再給你最後一次誠實的機會。\n\n真的有轉帳安太歲了嗎？(點「取消」回去乖乖轉帳，點「確定」接受懲罰)')) {
+              if(confirm('好啦，再給你最後一次誠實的機會。\n\n真的有轉帳了嗎？(點「取消」回去乖乖轉帳，點「確定」接受懲罰)')) {
                 alert('哼，看在今天是你的生日份上，小寶就大發慈悲原諒你的偷吃步！😘\n\n點擊「確定」正式為你特赦解鎖！❤️');
                 handlePayClick();
               }
@@ -649,7 +657,41 @@ function retryQuiz() {
 function finishQuizStage() {
   document.getElementById('pay-modal').classList.add('active');
 }
+/* ── 防作弊轉帳偵測系統 ── */
+let leaveTime = 0;
+let hasTraded = false; // 是否觸發過點擊
 
+// 當男友點了轉帳或複製帳號，記錄當下時間，並啟動監聽
+function recordLeaveTime() {
+  leaveTime = new Date().getTime();
+  hasTraded = true;
+}
+
+// 監聽網頁重新獲得焦點（從銀行 App 切換回來網頁時）
+window.addEventListener('focus', function() {
+  // 如果根本沒點過轉帳按鈕，或者按鈕已經解鎖了，就不重複執行
+  if (!hasTraded || leaveTime === 0) return;
+  
+  const returnTime = new Date().getTime();
+  const timePassed = (returnTime - leaveTime) / 1000; // 換算成秒數
+  
+  const successBtn = document.getElementById('pay-success-btn');
+  
+  if (timePassed >= 10) {
+    // 成功離開超過 10 秒！解鎖按鈕並變綠色
+    successBtn.disabled = false;
+    successBtn.style.borderColor = 'var(--green)';
+    successBtn.style.color = 'var(--green)';
+    successBtn.style.background = 'rgba(78,203,122,0.05)';
+    successBtn.style.cursor = 'pointer';
+    successBtn.textContent = '✅ 我已乖乖完成轉帳，申請解鎖！';
+    leaveTime = 0; // 重設時間，避免重複觸發
+  } else {
+    // 離開不到 10 秒，判定在敷衍作弊
+    alert(`（無尾熊偵測雷達逼逼逼── 🐨🚨）\n\n陳勁碩！你才離開 ${Math.round(timePassed)} 秒鐘！\n這點時間連密碼都輸入不完吧，你根本沒轉帳！😤\n\n不准偷懶！`);
+    leaveTime = 0; // 失敗了重設，要重新點擊按鈕才行
+  }
+});
 function handlePayClick() {
   alert('叮咚！檢測到滿滿的愛意，親愛的男友已自動獲得永久免費特權！❤️');
   document.getElementById('pay-modal').classList.remove('active');
