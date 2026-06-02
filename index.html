@@ -297,6 +297,13 @@ body {
   margin-top: 15px;
   flex-wrap: wrap;
 }
+.pc-album {
+  display: flex;
+  justify-content: center;
+  gap: 8px;
+  margin-top: 15px;
+  flex-wrap: wrap;
+}
 .pc-slot {
   width: 45px;
   height: 65px;
@@ -502,7 +509,7 @@ body {
         <div class="pc-slot" id="slot-3">★</div>
       </div>
 
-      <!-- 【新加入】當收集到 4/4 時，才會蹦出來的「按繼續前進按鈕」 -->
+      <!-- 当收集到 4/4 时，才會蹦出來的「按繼續前進按鈕」 -->
       <button class="glow-btn mt" id="pc-continue-btn" style="display:none; border-color:#e8a0b4; color:#e8a0b4; width:100%; font-size:16px;" onclick="unlockAndScrollToMemory()">
         ✨ 繼續前進，解鎖我們的回憶 →
       </button>
@@ -722,6 +729,7 @@ const ALL_QUESTIONS = [
   { group:'IVE', type:'歌曲辨認', question:'哪首是 IVE 的出道曲？', options:['LOVE DIVE','After LIKE','ELEVEN','I AM'], answer:2 }
 ];
 
+// Fisher-Yates 基礎洗牌演算法
 function shuffle(arr){
   const a=[...arr];
   for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]];}
@@ -732,7 +740,32 @@ let quizQuestions=[], quizCurrent=0, quizScore=0, wrongItems=[];
 
 function startQuizGameplay() {
   gotoStage(3); 
-  quizQuestions = shuffle(ALL_QUESTIONS);
+  
+  // 1. 先將題目陣列進行隨機排序
+  const tempQuestions = shuffle(ALL_QUESTIONS);
+  
+  // 2. 接著對每題內部的選項（options）單獨洗牌，並修正 answer 索引
+  quizQuestions = tempQuestions.map(quiz => {
+    // 將每個選項與它是否為正解標記成物件陣列
+    const mappedOptions = quiz.options.map((opt, idx) => ({
+      text: opt,
+      isCorrect: idx === quiz.answer
+    }));
+    
+    // 洗牌選項
+    const shuffledMapped = shuffle(mappedOptions);
+    
+    // 還原回純文字的 options 陣列與抓取新的 answer 索引值
+    const finalOptions = shuffledMapped.map(item => item.text);
+    const finalAnswerIndex = shuffledMapped.findIndex(item => item.isCorrect);
+    
+    return {
+      ...quiz,
+      options: finalOptions,
+      answer: finalAnswerIndex
+    };
+  });
+
   quizCurrent = 0; quizScore = 0; wrongItems = [];
   renderQuestion();
 }
@@ -919,7 +952,7 @@ function drawPhotoCard() {
 
   if(typeof launchConfetti === "function") launchConfetti();
 
-  // 當 4 張卡片全部收集完成時，顯現「繼續前進」按鈕，但不自動蹦出回憶區
+  // 當 4 張卡片全部收集完成時，顯現「繼續前進」按鈕
   if (collectedCards.size === PC_DATA.length) {
     setTimeout(() => {
       document.getElementById('pc-continue-btn').style.display = 'block';
