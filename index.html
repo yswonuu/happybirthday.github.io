@@ -187,7 +187,135 @@ body {
 .gal-item img { width: 100%; height: 100%; object-fit: cover; display: block; transition: transform 0.4s, filter 0.4s; filter: grayscale(30%); }
 .gal-item:hover img { transform: scale(1.05); filter: none; }
 .gal-label { position: absolute; bottom: 0; left: 0; right: 0; background: linear-gradient(transparent, rgba(10,10,20,0.9)); padding: 20px 12px 10px; font-size: 12px; letter-spacing: 2px; color: var(--gold); text-transform: uppercase; }
-
+/* ── K-POP PHOTOCARD PACK (抽小卡專區) ── */
+.pc-section {
+  margin: 30px auto;
+  padding: 24px;
+  background: rgba(255, 255, 255, 0.02);
+  border: 1px dashed var(--gold);
+  border-radius: 8px;
+  max-width: 500px;
+  width: 100%;
+}
+.pc-title {
+  font-family: 'Black Han Sans', sans-serif;
+  font-size: 1.4rem;
+  color: var(--gold2);
+  margin-bottom: 6px;
+  letter-spacing: 2px;
+}
+.pc-counter {
+  font-size: 11px;
+  color: var(--muted);
+  letter-spacing: 2px;
+  margin-bottom: 20px;
+}
+/* 小卡卡片本體 */
+.pc-container {
+  width: 180px;
+  height: 270px;
+  margin: 0 auto 20px;
+  perspective: 1000px;
+  cursor: pointer;
+}
+.pc-card-inner {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  text-align: center;
+  transition: transform 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+  transform-style: preserve-3d;
+}
+/* 被抽中/點擊後的翻面狀態 */
+.pc-container.open .pc-card-inner {
+  transform: rotateY(180deg);
+}
+/* 卡片正反面 */
+.pc-front, .pc-back {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  -webkit-backface-visibility: hidden;
+  backface-visibility: hidden;
+  border-radius: 12px;
+  box-shadow: 0 8px 25px rgba(0,0,0,0.5);
+}
+/* 未拆封的盲盒包裝/卡背 */
+.pc-front {
+  background: linear-gradient(135deg, #1e1b30 0%, #0a0813 100%);
+  border: 2px solid var(--gold);
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  color: var(--gold2);
+}
+.pc-pack-logo {
+  font-size: 3rem;
+  margin-bottom: 10px;
+  animation: wave 1s infinite alternate;
+}
+.pc-pack-text {
+  font-size: 12px;
+  letter-spacing: 3px;
+  border: 1px solid rgba(201,168,76,0.4);
+  padding: 4px 10px;
+  border-radius: 20px;
+}
+/* 抽出來的小卡正面 (因為CSS翻轉原因，這裡命名為 pc-back) */
+.pc-back {
+  background: #14121e;
+  border: 2px solid var(--pink);
+  transform: rotateY(180deg);
+  overflow: hidden;
+  position: relative;
+}
+.pc-back img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+/* 小卡下方的精緻應援標籤 */
+.pc-tag {
+  position: absolute;
+  bottom: 0; left: 0; right: 0;
+  background: linear-gradient(transparent, rgba(10,10,15,0.95) 40%);
+  padding: 20px 10px 10px;
+  font-size: 11px;
+  color: var(--white);
+  letter-spacing: 1px;
+}
+.pc-tag span {
+  color: var(--pink);
+  font-weight: bold;
+}
+/* 已收集卡冊 */
+.pc-album {
+  display: flex;
+  justify-content: center;
+  gap: 8px;
+  margin-top: 15px;
+  flex-wrap: wrap;
+}
+.pc-slot {
+  width: 45px;
+  height: 65px;
+  background: rgba(255,255,255,0.03);
+  border: 1px dashed rgba(245,240,235,0.2);
+  border-radius: 4px;
+  font-size: 10px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  color: rgba(245,240,235,0.2);
+  transition: all 0.3s;
+}
+.pc-slot.unlocked {
+  border: 1px solid var(--gold);
+  color: var(--gold2);
+  background: rgba(201,168,76,0.1);
+  box-shadow: 0 0 8px rgba(201,168,76,0.2);
+}
 /* ── LETTER ── */
 #final-letter { font-size: 1.05rem; line-height: 2.4; color: rgba(245,240,235,0.9); text-align: left; white-space: pre-line; min-height: 60px; margin: 20px 0; border-left: 2px solid rgba(201,168,76,0.3); padding-left: 20px; }
 
@@ -345,19 +473,58 @@ body {
 <!-- ════ SCREEN 3: GALLERY + LETTER ════ -->
 <section class="screen" id="s-final">
   <div class="card anim-in" style="max-width:750px">
-    <div class="stage-num">Stage 03 · Memory Gallery</div>
-    <h2>💎 我們的回憶 💎</h2>
-    <div class="gallery-grid" id="gallery-grid">
-      <div class="gal-item"><img src="https://i.ibb.co/wNrVvB3T/IMG-0205.png"><div class="gal-label">回憶 01</div></div>
-      <div class="gal-item"><img src="https://i.ibb.co/Ps96pmgZ/IMG-1087.jpg"><div class="gal-label">回憶 02</div></div>
-      <div class="gal-item"><img src="https://i.ibb.co/yG6yHk9/IMG-0074.jpg"><div class="gal-label">回憶 03</div></div>
-      <div class="gal-item"><img src="https://i.ibb.co/5h5p755F/IMG-2356.jpg"><div class="gal-label">回憶 04</div></div>
+    <div class="stage-num">Stage 03 · K-POP Photocard Pack</div>
+    
+    <!-- 1. 【優先顯示】卡包盲盒專區 -->
+    <div class="pc-section">
+      <div class="pc-title">💎 碩寶限定卡包盲盒 💎</div>
+      <div class="pc-counter" id="pc-status">點擊盲盒開拆！(已收集: 0 / 4)</div>
+      
+      <div class="pc-container" id="pc-box" onclick="drawPhotoCard()">
+        <div class="pc-card-inner">
+          <div class="pc-front">
+            <div class="pc-pack-logo">✨</div>
+            <div class="pc-pack-text">TAP TO OPEN</div>
+          </div>
+          <div class="pc-back">
+            <img id="pc-img" src="">
+            <div class="pc-tag" id="pc-text"></div>
+          </div>
+        </div>
+      </div>
+
+      <button class="glow-btn" id="pc-btn" style="padding: 8px 24px; font-size: 13px;" onclick="drawPhotoCard()">🎁 再拆一包</button>
+
+      <div class="pc-album">
+        <div class="pc-slot" id="slot-0">★</div>
+        <div class="pc-slot" id="slot-1">★</div>
+        <div class="pc-slot" id="slot-2">★</div>
+        <div class="pc-slot" id="slot-3">★</div>
+      </div>
+
+      <!-- 【新加入】當收集到 4/4 時，才會蹦出來的「按繼續前進按鈕」 -->
+      <button class="glow-btn mt" id="pc-continue-btn" style="display:none; border-color:#e8a0b4; color:#e8a0b4; width:100%; font-size:16px;" onclick="unlockAndScrollToMemory()">
+        ✨ 繼續前進，解鎖我們的回憶 →
+      </button>
     </div>
-    <div id="final-letter"></div>
-    <button class="glow-btn mt" id="letter-btn" style="display:none" onclick="gotoEncore()">🎁 打開生日禮物</button>
+
+    <!-- 2. 【點擊繼續前進按鈕後才解鎖解封】甜蜜照片與回憶大標題 -->
+    <div id="secret-memory-zone" style="display: none; margin-top: 40px; border-top: 1px dashed rgba(201,168,76,0.3); padding-top: 30px;">
+      <h2>💎 我們的回憶 💎</h2>
+      <div class="gallery-grid" id="gallery-grid">
+        <div class="gal-item"><img src="https://i.ibb.co/wNrVvB3T/IMG-0205.png"><div class="gal-label">回憶 01</div></div>
+        <div class="gal-item"><img src="https://i.ibb.co/Ps96pmgZ/IMG-1087.jpg"><div class="gal-label">回憶 02</div></div>
+        <div class="gal-item"><img src="https://i.ibb.co/yG6yHk9/IMG-0074.jpg"><div class="gal-label">回憶 03</div></div>
+        <div class="gal-item"><img src="https://i.ibb.co/5h5p755F/IMG-2356.jpg"><div class="gal-label">回憶 04</div></div>
+      </div>
+      
+      <!-- 3. 妳原本的打字情書與下一關按鈕 -->
+      <div id="final-letter"></div>
+      <button class="glow-btn mt" id="letter-btn" style="display:none" onclick="gotoEncore()">🎁 打開生日禮物</button>
+    </div>
+
   </div>
 </section>
-
 <!-- ════ SCREEN 4: ENCORE ════ -->
 <section class="screen" id="s-encore">
   <div class="lightstick-row">
@@ -443,10 +610,8 @@ function checkTime() {
   if (diff <= 0) {
     lockScreen.style.display = 'none';
     clearInterval(timerInterval);
-    // 🥳 6/6 時間到了！網頁標籤瞬間變身為生日快樂！
     document.title = "✨ 勁碩生日快樂 💎 ✨";
   } else {
-    // 🐨 6/6 以前他偷點開，網頁標籤會顯示這個
     document.title = "驚喜籌備中... 🐨";
     
     const d = Math.floor(diff / (1000 * 60 * 60 * 24));
@@ -468,7 +633,6 @@ function triggerBackdoor() {
     bypassLock = true;
     lockScreen.style.display = 'none';
     clearInterval(timerInterval);
-    // ❤️ 妳輸入密碼測試時，標籤也會立刻變成生日快樂，方便妳看效果！
     document.title = "✨ 勁碩生日快樂 💎 ✨";
     alert("密碼正確！已暫時解除時間鎖，祝測試順利 ❤️");
   } else if (pw !== null) {
@@ -525,7 +689,6 @@ function gotoStage(n){
   const el = document.getElementById(targets[n]);
   if(el){ el.classList.add('active'); window.scrollTo(0,0); }
   if(n>=1 && n<=4) updateProgress(mappedNavIndex);
-  if(n===4) initFinal();
 }
 
 function startGame(){ gotoStage(1); typeStory(); }
@@ -555,7 +718,7 @@ const ALL_QUESTIONS = [
   { group:'LE SSERAFIM', type:'成員知識', question:'LE SSERAFIM 兩位日本成員分別是誰？', options:['Kazuha&Yunjin','Kazuha&Sakura','Yunjin&Sakura','Sakura&Eunchae'], answer:1 },
   { group:'aespa', type:'歌曲辨認', question:'哪首是 aespa 的出道曲？', options:['Next Level','Black Mamba','Savage','Drama'], answer:1 },
   { group:'aespa', type:'成員知識', question:'aespa 哪位成員來自中國？', options:['Karina','Giselle','NingNing','Winter'], answer:2 },
-  { group:'IVE', type:'成員知識', question:'IVE 哪兩位成員曾是 IZ*ONE 成員？', options:['Yujin & Rei','Wonyoung & Yujin','Liz & Leeseo','Rei & Wonyoung'], answer:1 },
+  { group:'IVE', type:'成員知識', question:'IVE 哪兩位成員曾 es IZ*ONE 成員？', options:['Yujin & Rei','Wonyoung & Yujin','Liz & Leeseo','Rei & Wonyoung'], answer:1 },
   { group:'IVE', type:'歌曲辨認', question:'哪首是 IVE 的出道曲？', options:['LOVE DIVE','After LIKE','ELEVEN','I AM'], answer:2 }
 ];
 
@@ -568,7 +731,7 @@ function shuffle(arr){
 let quizQuestions=[], quizCurrent=0, quizScore=0, wrongItems=[];
 
 function startQuizGameplay() {
-  gotoStage(3); // 跳轉到遊戲進行畫面
+  gotoStage(3); 
   quizQuestions = shuffle(ALL_QUESTIONS);
   quizCurrent = 0; quizScore = 0; wrongItems = [];
   renderQuestion();
@@ -666,46 +829,43 @@ function retryQuiz() {
 function finishQuizStage() {
   document.getElementById('pay-modal').classList.add('active');
 }
+
 /* ── 防作弊轉帳偵測系統 ── */
 let leaveTime = 0;
-let hasTraded = false; // 是否觸發過點擊
+let hasTraded = false; 
 
-// 當男友點了轉帳或複製帳號，記錄當下時間，並啟動監聽
 function recordLeaveTime() {
   leaveTime = new Date().getTime();
   hasTraded = true;
 }
 
-// 監聽網頁重新獲得焦點（從銀行 App 切換回來網頁時）
 window.addEventListener('focus', function() {
-  // 如果根本沒點過轉帳按鈕，或者按鈕已經解鎖了，就不重複執行
   if (!hasTraded || leaveTime === 0) return;
   
   const returnTime = new Date().getTime();
-  const timePassed = (returnTime - leaveTime) / 1000; // 換算成秒數
+  const timePassed = (returnTime - leaveTime) / 1000; 
   
   const successBtn = document.getElementById('pay-success-btn');
   
   if (timePassed >= 10) {
-    // 成功離開超過 10 秒！解鎖按鈕並變綠色
     successBtn.disabled = false;
     successBtn.style.borderColor = 'var(--green)';
     successBtn.style.color = 'var(--green)';
     successBtn.style.background = 'rgba(78,203,122,0.05)';
     successBtn.style.cursor = 'pointer';
     successBtn.textContent = '✅ 我已乖乖完成轉帳，申請解鎖！';
-    leaveTime = 0; // 重設時間，避免重複觸發
+    leaveTime = 0; 
   } else {
-    // 離開不到 10 秒，判定在敷衍作弊
     alert(`（無尾熊偵測雷達逼逼逼── 🐨🚨）\n\n陳勁碩！你才離開 ${Math.round(timePassed)} 秒鐘！\n這點時間連密碼都輸入不完吧，你根本沒轉帳！😤\n\n不准偷懶！`);
-    leaveTime = 0; // 失敗了重設，要重新點擊按鈕才行
+    leaveTime = 0; 
   }
 });
+
 function handlePayClick() {
   alert('叮咚！檢測到滿滿的愛意，親愛的男友已自動獲得永久免費特權！❤️');
   document.getElementById('pay-modal').classList.remove('active');
   document.getElementById('s-quiz-result').classList.remove('active');
-  gotoStage(4); // 進入回憶相簿與情書
+  gotoStage(4); 
 }
 
 function launchConfetti(){
@@ -722,6 +882,65 @@ function launchConfetti(){
       setTimeout(()=>c.remove(),6000);
     },i*35);
   }
+}
+
+/* ── 拆小卡盲盒邏輯 ── */
+const PC_DATA = [
+  { img: "https://i.ibb.co/KjcP5dH3/IMG-0064.jpg", text: "【限定卡】<span>小寶可愛嗎🐨</span>(其實是沒照片可以放)" },
+  { img: "https://i.ibb.co/hRRyjfcB/IMG-9286.jpg", text: "【珍稀卡】陽光很美<span>我美嗎🍬</span>" },
+  { img: "https://i.ibb.co/Css6NvP0/IMG-0942.jpg", text: "【閃卡】哦!我靠在一個帥哥的肩上ㄟ<span>他是誰啊✨</span>" },
+  { img: "https://i.ibb.co/BHXKkk4Z/IMG-0087.jpg", text: "【隱藏卡】<span>後面有位先生</span>不知道在幹嘛?" }
+];
+let collectedCards = new Set();
+let currentCardIndex = 0; 
+
+function drawPhotoCard() {
+  const box = document.getElementById('pc-box');
+  const btn = document.getElementById('pc-btn');
+  
+  if (box.classList.contains('open')) {
+    box.classList.remove('open');
+    btn.textContent = "🎁 開拆下一包";
+    return;
+  }
+
+  const card = PC_DATA[currentCardIndex];
+  document.getElementById('pc-img').src = card.img;
+  document.getElementById('pc-text').innerHTML = card.text;
+
+  box.classList.add('open');
+  btn.textContent = "裝回袋子";
+
+  collectedCards.add(currentCardIndex);
+  document.getElementById(`slot-${currentCardIndex}`).classList.add('unlocked');
+  document.getElementById(`slot-${currentCardIndex}`).textContent = `卡片 ${currentCardIndex + 1}`;
+  
+  document.getElementById('pc-status').textContent = `點擊盲盒開拆！(已收集: ${collectedCards.size} / ${PC_DATA.length})`;
+
+  if(typeof launchConfetti === "function") launchConfetti();
+
+  // 當 4 張卡片全部收集完成時，顯現「繼續前進」按鈕，但不自動蹦出回憶區
+  if (collectedCards.size === PC_DATA.length) {
+    setTimeout(() => {
+      document.getElementById('pc-continue-btn').style.display = 'block';
+      document.getElementById('pc-continue-btn').classList.add('fade-up');
+    }, 1000);
+  }
+
+  currentCardIndex = (currentCardIndex + 1) % PC_DATA.length;
+}
+
+/* ── 【新功能】點擊按鈕才載入並前往回憶 ── */
+function unlockAndScrollToMemory() {
+  const memoryZone = document.getElementById('secret-memory-zone');
+  memoryZone.style.display = 'block';
+  memoryZone.classList.add('fade-up');
+  
+  // 啟動打字情書
+  initFinal();
+  
+  // 平滑滾動到回憶區域
+  memoryZone.scrollIntoView({ behavior: 'smooth' });
 }
 
 /* ── FINAL LETTER ── */
