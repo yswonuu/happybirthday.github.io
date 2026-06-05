@@ -610,7 +610,6 @@ function typeStory(){
   let i = 0;
   function t(){ 
     if(i <= STORY.length){ 
-      // 改用 slice 語法安全切片，遇到 Emoji 絕對不會斷掉卡死
       el.textContent = STORY.slice(0, i); 
       i++;
       setTimeout(t, 45); 
@@ -890,7 +889,8 @@ function gotoEncore(){
 function startConfetti(){
   const colors=['#c9a84c','#f0d080','#e8a0b4','#6ab0e8','#f5f0eb'];
   for(let i=0;i<80;i++){
-    setTimeout(()=>{\n      const c=document.createElement('div');
+    setTimeout(()=>{
+      const c=document.createElement('div');
       c.className='confetti-piece';
       c.style.left=Math.random()*100+'vw';
       c.style.background=colors[Math.floor(Math.random()*colors.length)];
