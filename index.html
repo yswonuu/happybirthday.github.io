@@ -263,7 +263,7 @@ body {
   padding: 4px 10px;
   border-radius: 20px;
 }
-/* 抽出來的小卡正面 (因為CSS翻轉原因，這裡命名為 pc-back) */
+/* 抽出來的小卡正面 */
 .pc-back {
   background: #14121e;
   border: 2px solid var(--pink);
@@ -275,7 +275,7 @@ body {
   width: 100%;
   height: 100%;
   object-fit: cover;
-  transition: opacity 0.2s ease-in-out; /* 讓圖片淡入淡出更平滑 */
+  transition: opacity 0.2s ease-in-out;
 }
 /* 小卡下方的精緻應援標籤 */
 .pc-tag {
@@ -311,13 +311,13 @@ body {
   align-items: center;
   color: rgba(245,240,235,0.2);
   transition: all 0.3s;
-  overflow: hidden; /* 防止圖片超出格子 */
+  overflow: hidden;
   position: relative;
 }
 .pc-slot img {
   width: 100%;
   height: 100%;
-  object-fit: cover; /* 讓圖片完美裁切填滿小格子 */
+  object-fit: cover;
   display: block;
 }
 .pc-slot.unlocked {
@@ -370,7 +370,6 @@ body {
 </head>
 <body>
 
-<!-- ════ 時間鎖覆蓋畫面 ════ -->
 <div id="time-lock-screen">
   <div class="lock-card">
     <div class="lock-icon" onclick="triggerBackdoor()">🎁</div>
@@ -391,7 +390,6 @@ body {
 
 <canvas id="canvas-bg"></canvas>
 
-<!-- ════ STAGE NAV ════ -->
 <div class="stage-header" id="stage-nav" style="display:none">
   <div class="stage-label" id="stage-label">LOVE</div>
   <div class="progress-row" id="progress-row">
@@ -401,7 +399,6 @@ body {
   </div>
 </div>
 
-<!-- ════ SCREEN 0: TITLE ════ -->
 <section class="screen active" id="s-title">
   <div class="idol-badge">Happy Birthday </div>
   <h1 class="main-title"><span>Joshua</span></h1>
@@ -414,7 +411,6 @@ body {
   <button class="glow-btn" onclick="startGame()">▶ START GAME</button>
 </section>
 
-<!-- ════ SCREEN 1: STORY INTRO ════ -->
 <section class="screen" id="s-story">
   <div class="card anim-in">
     <div class="stage-num">Stage 01 · Prologue</div>
@@ -425,7 +421,6 @@ body {
   </div>
 </section>
 
-<!-- ════ SCREEN 2: KPOP QUIZ CHALLENGE ════ -->
 <section class="screen" id="s-quiz-intro">
   <div class="card anim-in">
     <div class="badge">K-POP Challenge</div>
@@ -480,12 +475,10 @@ body {
   </div>
 </section>
 
-<!-- ════ SCREEN 3: GALLERY + LETTER ════ -->
 <section class="screen" id="s-final">
   <div class="card anim-in" style="max-width:750px">
     <div class="stage-num">Stage 03 · K-POP Photocard Pack</div>
     
-    <!-- 1. 卡包盲盒專區 -->
     <div class="pc-section">
       <div class="pc-title">💜 碩寶限定卡包盲盒 💜</div>
       <div class="pc-counter" id="pc-status">點擊盲盒開拆！(已收集: 0 / 4)</div>
@@ -505,7 +498,6 @@ body {
 
       <button class="glow-btn" id="pc-btn" style="padding: 8px 24px; font-size: 13px;" onclick="drawPhotoCard()">🎁 再拆一包</button>
 
-      <!-- 修改後的收集卡冊（一開始顯示 ★ 符號，解鎖後替換成 <img>） -->
       <div class="pc-album">
         <div class="pc-slot" id="slot-0">★</div>
         <div class="pc-slot" id="slot-1">★</div>
@@ -513,13 +505,11 @@ body {
         <div class="pc-slot" id="slot-3">★</div>
       </div>
 
-      <!-- 当收集到 4/4 时，才會蹦出來的「按繼續前進按鈕」 -->
       <button class="glow-btn mt" id="pc-continue-btn" style="display:none; border-color:#e8a0b4; color:#e8a0b4; width:100%; font-size:16px;" onclick="unlockAndScrollToMemory()">
         ✨ 繼續前進，解鎖我們的回憶 →
       </button>
     </div>
 
-    <!-- 2. 【點擊繼續前進按鈕後才解鎖解封】甜蜜照片與回憶大標題 -->
     <div id="secret-memory-zone" style="display: none; margin-top: 40px; border-top: 1px dashed rgba(201,168,76,0.3); padding-top: 30px;">
       <h2>💎 我們的回憶 💎</h2>
       <div class="gallery-grid" id="gallery-grid">
@@ -529,7 +519,6 @@ body {
         <div class="gal-item"><img src="https://i.ibb.co/5h5p755F/IMG-2356.jpg"><div class="gal-label">回憶 04</div></div>
       </div>
       
-      <!-- 3. 妳原本的打字情書與下一關按鈕 -->
       <div id="final-letter"></div>
       <button class="glow-btn mt" id="letter-btn" style="display:none" onclick="gotoEncore()">🎁 打開生日禮物</button>
     </div>
@@ -537,7 +526,6 @@ body {
   </div>
 </section>
 
-<!-- ════ SCREEN 4: ENCORE ════ -->
 <section class="screen" id="s-encore">
   <div class="lightstick-row">
     <span class="ls">🪄</span><span class="ls">💎</span><span class="ls">🪄</span><span class="ls">💎</span><span class="ls">🪄</span>
@@ -587,7 +575,6 @@ body {
         🔒 請先點擊上方按鈕前往轉帳
       </button>
 
-      <!-- 防作弊連環按鈕 -->
       <button type="button" class="pay-link-btn" 
         style="background: transparent; border: none; color: rgba(232, 160, 180, 0.6); font-size: 12px; margin-top: 16px; cursor: pointer; text-decoration: underline; letter-spacing: 1px; transition: color 0.2s;" 
         onmouseover="this.style.color='var(--pink)'" 
@@ -617,7 +604,7 @@ const PC_DATA = [
   { img: "https://i.ibb.co/BHXKkk4Z/IMG-0087.jpg", text: "【隱藏卡】<span>後面有位先生</span>不知道在幹嘛?" }
 ];
 
-// 【優化：方法二】網頁開啟時，立刻悄悄在背景預先下載 4 張小卡圖片，確保換卡時不需要臨時下載
+// 預載圖片
 PC_DATA.forEach(card => {
   const imgPreload = new Image();
   imgPreload.src = card.img;
@@ -865,7 +852,7 @@ function finishQuizStage() {
   document.getElementById('pay-modal').classList.add('active');
 }
 
-/* ── 防作弊轉帳偵測系統 ── */
+/* ── 付費偵測系統 ── */
 let leaveTime = 0;
 let hasTraded = false; 
 
@@ -917,7 +904,7 @@ function launchConfetti(){
   }
 }
 
-/* ── 拆小卡盲盒邏輯（優化非同步載入） ── */
+/* ── 拆小卡盲盒邏輯（修改：收回後才顯示於格子） ── */
 let collectedCards = new Set();
 let currentCardIndex = 0; 
 
@@ -926,52 +913,59 @@ function drawPhotoCard() {
   const btn = document.getElementById('pc-btn');
   const pcImg = document.getElementById('pc-img');
   
+  // ── 【動作 A】點擊「裝回袋子（收回）」時的邏輯 ──
   if (box.classList.contains('open')) {
     box.classList.remove('open');
     btn.textContent = "🎁 開拆下一包";
-    return;
-  }
 
-  const card = PC_DATA[currentCardIndex];
-  
-  // 【優化：方法一與方法二雙重保險】
-  // 更換 src 前先將圖片設為透明，防止上一張舊圖的殘影停留在畫面上
-  pcImg.style.opacity = '0';
-  pcImg.src = card.img;
-  document.getElementById('pc-text').innerHTML = card.text;
+    // 取得剛剛拆開的那張小卡資料
+    // 因為在展示時 currentCardIndex 已經指向下一張，所以這裡要推算回剛剛展示的那張
+    const prevIndex = (currentCardIndex === 0) ? PC_DATA.length - 1 : currentCardIndex - 1;
+    const cardData = PC_DATA[prevIndex];
 
-  // 監聽圖片是否已在瀏覽器載入完畢（通常因為前面有預載，這裡會瞬間完成）
-  pcImg.onload = function() {
-    // 真正載入好了，再展示翻卡，並將新圖顯現，徹底杜絕卡頓和跳圖！
-    pcImg.style.opacity = '1';
-    box.classList.add('open');
-    btn.textContent = "裝回袋子";
-
-    // 將當前解鎖的 slot 格子塞入 <img> 標籤來呈現小圖，並加上解鎖樣式
-    const targetSlot = document.getElementById(`slot-${currentCardIndex}`);
-    if (targetSlot) {
-      targetSlot.innerHTML = `<img src="${card.img}" alt="card">`;
+    // 直到這時候，下方對應的收藏格子才會更新圖片並解鎖亮起！
+    const targetSlot = document.getElementById(`slot-${prevIndex}`);
+    if (targetSlot && !targetSlot.classList.contains('unlocked')) {
+      targetSlot.innerHTML = `<img src="${cardData.img}" alt="card">`;
       targetSlot.classList.add('unlocked');
     }
 
-    collectedCards.add(currentCardIndex);
+    // 將卡片加入已收集清單
+    collectedCards.add(prevIndex);
     document.getElementById('pc-status').textContent = `點擊盲盒開拆！(已收集: ${collectedCards.size} / ${PC_DATA.length})`;
 
-    if(typeof launchConfetti === "function") launchConfetti();
-
+    // 如果全套 4 張都已經成功「裝回袋子」收入卡冊了，就開啟下一步的回憶專區
     if (collectedCards.size === PC_DATA.length) {
       setTimeout(() => {
         document.getElementById('pc-continue-btn').style.display = 'block';
         document.getElementById('pc-continue-btn').classList.add('fade-up');
-      }, 1000);
+      }, 500);
     }
+    return;
+  }
 
-    // 移向下一個卡片索引
+  // ── 【動作 B】點擊「開拆盲盒」時的邏輯 ──
+  const card = PC_DATA[currentCardIndex];
+  
+  // 切換 src 前先隱藏，防止舊圖殘影
+  pcImg.style.opacity = '0';
+  pcImg.src = card.img;
+  document.getElementById('pc-text').innerHTML = card.text;
+
+  // 圖片載入完成後翻開大卡片（此時下方的格子依然維持 ★ 符號，不作動）
+  pcImg.onload = function() {
+    pcImg.style.opacity = '1';
+    box.classList.add('open');
+    btn.textContent = "裝回袋子";
+
+    if(typeof launchConfetti === "function") launchConfetti();
+
+    // 順移至下一個索引，留給下一次拆包使用
     currentCardIndex = (currentCardIndex + 1) % PC_DATA.length;
   };
 }
 
-/* ── 點擊按鈕才載入並前往回憶 ── */
+/* ── 前往回憶 ── */
 function unlockAndScrollToMemory() {
   const memoryZone = document.getElementById('secret-memory-zone');
   memoryZone.style.display = 'block';
@@ -982,7 +976,7 @@ function unlockAndScrollToMemory() {
 
 /* ── FINAL LETTER ── */
 function initFinal(){
-  const LETTER = `和你在一起的每一天都很開心，\n儘管久久見一次面，\n但你總有說不完的故事，\n很喜歡靜靜地聽你分享。\n\n未來還有很多很多個生日跟節日，\n希望可以陪你一起拍照、一起分享生活中的大小事，\n開心快樂地過每一天。\n\n생일 축하해요，寶寶~`;
+  const LETTER = `和你在一起的每一天都很開心，\n儘管久久見一次面，\n但你總有說不完的故事，\n我也很喜歡靜靜地聽你分享。\n\n未來還有很多很多個生日跟節日，\n希望可以陪你一起拍照、一起分享生活中的大小事，\n開心快樂地過每一天。\n\n생일 축하해요，寶寶~`;
   const el = document.getElementById('final-letter');
   el.textContent=''; let i=0;
   function ty(){ if(i<LETTER.length){ el.textContent+=LETTER.charAt(i++); setTimeout(ty,40); } else { setTimeout(()=>{ document.getElementById('letter-btn').style.display='inline-block'; },500); } }
