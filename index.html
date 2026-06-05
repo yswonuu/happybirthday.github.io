@@ -197,6 +197,8 @@ body {
   border-radius: 8px;
   max-width: 500px;
   width: 100%;
+  /* 增加底部安全留白，防止手機瀏覽器橫幅擋到按鈕 */
+  padding-bottom: 40px; 
 }
 .pc-title {
   font-family: 'Black Han Sans', sans-serif;
@@ -731,7 +733,7 @@ const ALL_QUESTIONS = [
   { group:'LE SSERAFIM', type:'成員知識', question:'LE SSERAFIM 兩位日本成員分別是誰？', options:['Kazuha&Yunjin','Kazuha&Sakura','Yunjin&Sakura','Sakura&Eunchae'], answer:1 },
   { group:'aespa', type:'歌曲辨認', question:'哪首是 Aespa 的出道曲？', options:['Next Level','Black Mamba','Savage','Drama'], answer:1 },
   { group:'aespa', type:'成員知識', question:'Aespa 哪位成員來自中國？', options:['Karina','Giselle','NingNing','Winter'], answer:2 },
-  { group:'IVE', type:'成員知識', question:'IVE 哪兩位成員曾是 IZ*ONE 成員？', options:['Yujin & Rei','Wonyoung & Yujin','Liz & Leeseo','Rei & Wonyoung'], answer:1 },
+  { group:'IVE', type:'成員知識', question:'IVE 哪兩位成員曾收藏過 IZ*ONE 成員？', options:['Yujin & Rei','Wonyoung & Yujin','Liz & Leeseo','Rei & Wonyoung'], answer:1 },
   { group:'IVE', type:'歌曲辨認', question:'哪首是 IVE 的出道曲？', options:['LOVE DIVE','After LIKE','ELEVEN','I AM'], answer:2 }
 ];
 
@@ -904,7 +906,7 @@ function launchConfetti(){
   }
 }
 
-/* ── 拆小卡盲盒邏輯（修改：收回後才顯示於格子） ── */
+/* ── 拆小卡盲盒邏輯 ── */
 let collectedCards = new Set();
 let currentCardIndex = 0; 
 
@@ -918,27 +920,27 @@ function drawPhotoCard() {
     box.classList.remove('open');
     btn.textContent = "🎁 開拆下一包";
 
-    // 取得剛剛拆開的那張小卡資料
-    // 因為在展示時 currentCardIndex 已經指向下一張，所以這裡要推算回剛剛展示的那張
     const prevIndex = (currentCardIndex === 0) ? PC_DATA.length - 1 : currentCardIndex - 1;
     const cardData = PC_DATA[prevIndex];
 
-    // 直到這時候，下方對應的收藏格子才會更新圖片並解鎖亮起！
     const targetSlot = document.getElementById(`slot-${prevIndex}`);
     if (targetSlot && !targetSlot.classList.contains('unlocked')) {
       targetSlot.innerHTML = `<img src="${cardData.img}" alt="card">`;
       targetSlot.classList.add('unlocked');
     }
 
-    // 將卡片加入已收集清單
     collectedCards.add(prevIndex);
     document.getElementById('pc-status').textContent = `點擊盲盒開拆！(已收集: ${collectedCards.size} / ${PC_DATA.length})`;
 
-    // 如果全套 4 張都已經成功「裝回袋子」收入卡冊了，就開啟下一步的回憶專區
+    // 如果全套 4 張都已經成功「裝回袋子」收入卡冊了
     if (collectedCards.size === PC_DATA.length) {
       setTimeout(() => {
-        document.getElementById('pc-continue-btn').style.display = 'block';
-        document.getElementById('pc-continue-btn').classList.add('fade-up');
+        const continueBtn = document.getElementById('pc-continue-btn');
+        continueBtn.style.display = 'block';
+        continueBtn.classList.add('fade-up');
+        
+        // 【優化點】：按鈕亮起時，自動幫碩寶向上平滑捲動網頁，把按鈕完全推到視覺中央，絕對不會被底部橫幅蓋到！
+        continueBtn.scrollIntoView({ behavior: 'smooth', block: 'center' });
       }, 500);
     }
     return;
@@ -947,20 +949,16 @@ function drawPhotoCard() {
   // ── 【動作 B】點擊「開拆盲盒」時的邏輯 ──
   const card = PC_DATA[currentCardIndex];
   
-  // 切換 src 前先隱藏，防止舊圖殘影
   pcImg.style.opacity = '0';
   pcImg.src = card.img;
   document.getElementById('pc-text').innerHTML = card.text;
 
-  // 圖片載入完成後翻開大卡片（此時下方的格子依然維持 ★ 符號，不作動）
   pcImg.onload = function() {
     pcImg.style.opacity = '1';
     box.classList.add('open');
     btn.textContent = "裝回袋子";
 
     if(typeof launchConfetti === "function") launchConfetti();
-
-    // 順移至下一個索引，留給下一次拆包使用
     currentCardIndex = (currentCardIndex + 1) % PC_DATA.length;
   };
 }
@@ -976,7 +974,7 @@ function unlockAndScrollToMemory() {
 
 /* ── FINAL LETTER ── */
 function initFinal(){
-  const LETTER = `和你在一起的每一天都很開心，\n儘管久久見一次面，\n但你總有說不完的故事，\n我也很喜歡靜靜地聽你分享。\n\n未來還有很多很多個生日跟節日，\n希望可以陪你一起拍照、一起分享生活中的大小事，\n開心快樂地過每一天。\n\n생일 축하해요，寶寶~`;
+  const LETTER = `和你在一起的每一天都很開心，\n儘管久久見一次面，\n但你總有說不完的故事，\n很喜歡靜靜地聽你分享。\n\n未來還有很多很多個生日跟節日，\n希望可以陪你一起拍照、一起分享生活中的大小事，\n開心快樂地過每一天。\n\n생일 축하해요，寶寶~`;
   const el = document.getElementById('final-letter');
   el.textContent=''; let i=0;
   function ty(){ if(i<LETTER.length){ el.textContent+=LETTER.charAt(i++); setTimeout(ty,40); } else { setTimeout(()=>{ document.getElementById('letter-btn').style.display='inline-block'; },500); } }
