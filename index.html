@@ -871,7 +871,7 @@ function unlockAndScrollToMemory() {
 
 /* ── FINAL LETTER ── */
 function initFinal(){
-  const LETTER = `和你在一起的每一天都很開心，\n儘管久久見一次面，\n但你總有說不完的故事，\n很喜歡靜靜地聽你分享。\n\n未來還有很多很多個生日跟節日，\n希望可以陪你一起拍照、一起分享生活中的大小事，\n開心快樂地過每一天。\n\n생일 축하해요，寶寶~`;
+  const LETTER = `和你在一起的每一天都很開心，\n儘管久久見一次面，\n但你總有說不完的故事，\n我也很喜歡靜靜地聽你分享。\n\n未來還有很多很多個生日跟節日，\n希望可以陪你一起拍照、一起分享生活中的大小事，\n開心快樂地過每一天。\n\n생일 축하해요，寶寶~`;
   const el = document.getElementById('final-letter');
   el.textContent=''; let i=0;
   function ty(){ if(i<LETTER.length){ el.textContent+=LETTER.charAt(i++); setTimeout(ty,40); } else { setTimeout(()=>{ document.getElementById('letter-btn').style.display='inline-block'; },500); } }
