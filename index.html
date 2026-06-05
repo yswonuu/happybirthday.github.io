@@ -275,6 +275,7 @@ body {
   width: 100%;
   height: 100%;
   object-fit: cover;
+  transition: opacity 0.2s ease-in-out; /* 讓圖片淡入淡出更平滑 */
 }
 /* 小卡下方的精緻應援標籤 */
 .pc-tag {
@@ -608,6 +609,20 @@ body {
 </div>
 
 <script>
+/* ── 拆小卡盲盒資料與優化預載邏輯 ── */
+const PC_DATA = [
+  { img: "https://i.ibb.co/KjcP5dH3/IMG-0064.jpg", text: "【限定卡】<span>小寶可愛嗎🐨</span>(其實是沒照片可以放)" },
+  { img: "https://i.ibb.co/hRRyjfcB/IMG-9286.jpg", text: "【珍稀卡】陽光很美<span>我美嗎🍬</span>" },
+  { img: "https://i.ibb.co/Css6NvP0/IMG-0942.jpg", text: "【閃卡】哦!我靠在一個帥哥的肩上ㄟ<span>他誰啊✨</span>" },
+  { img: "https://i.ibb.co/BHXKkk4Z/IMG-0087.jpg", text: "【隱藏卡】<span>後面有位先生</span>不知道在幹嘛?" }
+];
+
+// 【優化：方法二】網頁開啟時，立刻悄悄在背景預先下載 4 張小卡圖片，確保換卡時不需要臨時下載
+PC_DATA.forEach(card => {
+  const imgPreload = new Image();
+  imgPreload.src = card.img;
+});
+
 /* ── TIME LOCK LOGIC ── */
 let bypassLock = false; 
 const targetDate = new Date("2026-06-06T00:00:00+08:00").getTime();
@@ -831,7 +846,7 @@ function showQuizResult(){
   if(wrongItems.length>0){
     let html=`<div class="wrong-list"><h4>答錯的題目</h4>`;
     wrongItems.forEach(w=>{
-      html+=`<div class="wrong-item">${w.q}<br>正解：<span>${w.correct}</span>　你答：${w.yours}</div>`;
+      html+=`<div class="wrong-item">${w.q}<br>正解：<span>${w.correct}</span> 你答：${w.yours}</div>`;
     });
     html+=`</div>`;
     ws.innerHTML=html;
@@ -902,20 +917,14 @@ function launchConfetti(){
   }
 }
 
-/* ── 拆小卡盲盒邏輯 ── */
-const PC_DATA = [
-  { img: "https://i.ibb.co/KjcP5dH3/IMG-0064.jpg", text: "【限定卡】<span>小寶可愛嗎🐨</span>(其實是沒照片可以放)" },
-  { img: "https://i.ibb.co/hRRyjfcB/IMG-9286.jpg", text: "【珍稀卡】陽光很美<span>我美嗎🍬</span>" },
-  { img: "https://i.ibb.co/Css6NvP0/IMG-0942.jpg", text: "【閃卡】哦!我靠在一個帥哥的肩上ㄟ<span>他誰啊✨</span>" },
-  { img: "https://i.ibb.co/BHXKkk4Z/IMG-0087.jpg", text: "【隱藏卡】<span>後面有位先生</span>不知道在幹嘛?" }
-];
+/* ── 拆小卡盲盒邏輯（優化非同步載入） ── */
 let collectedCards = new Set();
 let currentCardIndex = 0; 
 
-/* 修改此處函數：讓卡片翻開的同時，圖片也顯示在下方的對應卡冊格子裡 */
 function drawPhotoCard() {
   const box = document.getElementById('pc-box');
   const btn = document.getElementById('pc-btn');
+  const pcImg = document.getElementById('pc-img');
   
   if (box.classList.contains('open')) {
     box.classList.remove('open');
@@ -924,32 +933,42 @@ function drawPhotoCard() {
   }
 
   const card = PC_DATA[currentCardIndex];
-  document.getElementById('pc-img').src = card.img;
+  
+  // 【優化：方法一與方法二雙重保險】
+  // 更換 src 前先將圖片設為透明，防止上一張舊圖的殘影停留在畫面上
+  pcImg.style.opacity = '0';
+  pcImg.src = card.img;
   document.getElementById('pc-text').innerHTML = card.text;
 
-  box.classList.add('open');
-  btn.textContent = "裝回袋子";
+  // 監聽圖片是否已在瀏覽器載入完畢（通常因為前面有預載，這裡會瞬間完成）
+  pcImg.onload = function() {
+    // 真正載入好了，再展示翻卡，並將新圖顯現，徹底杜絕卡頓和跳圖！
+    pcImg.style.opacity = '1';
+    box.classList.add('open');
+    btn.textContent = "裝回袋子";
 
-  // 將當前解鎖的 slot 格子塞入 <img> 標籤來呈現小圖，並加上解鎖樣式
-  const targetSlot = document.getElementById(`slot-${currentCardIndex}`);
-  if (targetSlot) {
-    targetSlot.innerHTML = `<img src="${card.img}" alt="card">`;
-    targetSlot.classList.add('unlocked');
-  }
+    // 將當前解鎖的 slot 格子塞入 <img> 標籤來呈現小圖，並加上解鎖樣式
+    const targetSlot = document.getElementById(`slot-${currentCardIndex}`);
+    if (targetSlot) {
+      targetSlot.innerHTML = `<img src="${card.img}" alt="card">`;
+      targetSlot.classList.add('unlocked');
+    }
 
-  collectedCards.add(currentCardIndex);
-  document.getElementById('pc-status').textContent = `點擊盲盒開拆！(已收集: ${collectedCards.size} / ${PC_DATA.length})`;
+    collectedCards.add(currentCardIndex);
+    document.getElementById('pc-status').textContent = `點擊盲盒開拆！(已收集: ${collectedCards.size} / ${PC_DATA.length})`;
 
-  if(typeof launchConfetti === "function") launchConfetti();
+    if(typeof launchConfetti === "function") launchConfetti();
 
-  if (collectedCards.size === PC_DATA.length) {
-    setTimeout(() => {
-      document.getElementById('pc-continue-btn').style.display = 'block';
-      document.getElementById('pc-continue-btn').classList.add('fade-up');
-    }, 1000);
-  }
+    if (collectedCards.size === PC_DATA.length) {
+      setTimeout(() => {
+        document.getElementById('pc-continue-btn').style.display = 'block';
+        document.getElementById('pc-continue-btn').classList.add('fade-up');
+      }, 1000);
+    }
 
-  currentCardIndex = (currentCardIndex + 1) % PC_DATA.length;
+    // 移向下一個卡片索引
+    currentCardIndex = (currentCardIndex + 1) % PC_DATA.length;
+  };
 }
 
 /* ── 點擊按鈕才載入並前往回憶 ── */
