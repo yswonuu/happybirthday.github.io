@@ -33,42 +33,6 @@ body {
   overflow-x: hidden;
 }
 
-/* ── TIME LOCK SCREEN (時間鎖畫面) ── */
-#time-lock-screen {
-  position: fixed;
-  inset: 0;
-  background: var(--bg);
-  z-index: 99999; 
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  padding: 20px;
-  text-align: center;
-}
-.lock-card {
-  background: var(--card-bg);
-  border: 1px solid var(--border);
-  box-shadow: 0 0 40px rgba(201,168,76,0.1);
-  padding: 40px 24px;
-  max-width: 450px;
-  width: 100%;
-  border-radius: 8px;
-  backdrop-filter: blur(20px);
-}
-.lock-icon { font-size: 3.5rem; margin-bottom: 20px; animation: wave 1.5s ease-in-out infinite alternate; cursor: pointer; }
-.lock-title { font-family: 'Black Han Sans', sans-serif; font-size: 2rem; color: var(--gold2); margin-bottom: 12px; }
-.lock-desc { font-size: 14px; color: rgba(245,240,235,0.7); line-height: 1.8; margin-bottom: 24px; }
-.countdown-box {
-  display: flex; gap: 10px; justify-content: center; margin-top: 15px;
-}
-.countdown-item {
-  background: rgba(255,255,255,0.03);
-  border: 1px solid rgba(201,168,76,0.15);
-  padding: 10px; min-width: 65px; border-radius: 4px;
-}
-.countdown-num { font-family: 'Black Han Sans', sans-serif; font-size: 1.6rem; color: var(--white); }
-.countdown-label { font-size: 10px; color: var(--gold); margin-top: 2px; }
-
 /* ── STARFIELD ── */
 #canvas-bg {
   position: fixed; top:0; left:0; width:100%; height:100%; z-index:0; pointer-events:none;
@@ -197,7 +161,6 @@ body {
   border-radius: 8px;
   max-width: 500px;
   width: 100%;
-  /* 增加底部安全留白，防止手機瀏覽器橫幅擋到按鈕 */
   padding-bottom: 40px; 
 }
 .pc-title {
@@ -213,7 +176,6 @@ body {
   letter-spacing: 2px;
   margin-bottom: 20px;
 }
-/* 小卡卡片本體 */
 .pc-container {
   width: 180px;
   height: 270px;
@@ -229,11 +191,9 @@ body {
   transition: transform 0.6s cubic-bezier(0.4, 0, 0.2, 1);
   transform-style: preserve-3d;
 }
-/* 被抽中/點擊後的翻面狀態 */
 .pc-container.open .pc-card-inner {
   transform: rotateY(180deg);
 }
-/* 卡片正反面 */
 .pc-front, .pc-back {
   position: absolute;
   width: 100%;
@@ -243,7 +203,6 @@ body {
   border-radius: 12px;
   box-shadow: 0 8px 25px rgba(0,0,0,0.5);
 }
-/* 未拆封的盲盒包裝/卡背 */
 .pc-front {
   background: linear-gradient(135deg, #1e1b30 0%, #0a0813 100%);
   border: 2px solid var(--gold);
@@ -265,7 +224,6 @@ body {
   padding: 4px 10px;
   border-radius: 20px;
 }
-/* 抽出來的小卡正面 */
 .pc-back {
   background: #14121e;
   border: 2px solid var(--pink);
@@ -279,7 +237,6 @@ body {
   object-fit: cover;
   transition: opacity 0.2s ease-in-out;
 }
-/* 小卡下方的精緻應援標籤 */
 .pc-tag {
   position: absolute;
   bottom: 0; left: 0; right: 0;
@@ -293,7 +250,6 @@ body {
   color: var(--pink);
   font-weight: bold;
 }
-/* 已收集卡冊 */
 .pc-album {
   display: flex;
   justify-content: center;
@@ -371,24 +327,6 @@ body {
 </style>
 </head>
 <body>
-
-<div id="time-lock-screen">
-  <div class="lock-card">
-    <div class="lock-icon" onclick="triggerBackdoor()">🎁</div>
-    <div class="lock-title">驚喜籌備中...</div>
-    <div class="lock-desc">
-      碩寶～不要偷看！<br>
-      這個神祕網頁目前正由無尾熊嚴密看守中 🐨<br>
-      距離正式解鎖開啟還需要：
-    </div>
-    <div class="countdown-box">
-      <div class="countdown-item"><div class="countdown-num" id="cd-d">00</div><div class="countdown-label">天</div></div>
-      <div class="countdown-item"><div class="countdown-num" id="cd-h">00</div><div class="countdown-label">時</div></div>
-      <div class="countdown-item"><div class="countdown-num" id="cd-m">00</div><div class="countdown-label">分</div></div>
-      <div class="countdown-item"><div class="countdown-num" id="cd-s">00</div><div class="countdown-label">秒</div></div>
-    </div>
-  </div>
-</div>
 
 <canvas id="canvas-bg"></canvas>
 
@@ -612,51 +550,7 @@ PC_DATA.forEach(card => {
   imgPreload.src = card.img;
 });
 
-/* ── TIME LOCK LOGIC ── */
-let bypassLock = false; 
-const targetDate = new Date("2026-06-06T00:00:00+08:00").getTime();
-const lockScreen = document.getElementById('time-lock-screen');
-
-function checkTime() {
-  if (bypassLock) return;
-  const now = new Date().getTime();
-  const diff = targetDate - now;
-  
-  if (diff <= 0) {
-    lockScreen.style.display = 'none';
-    clearInterval(timerInterval);
-    document.title = "✨ 勁碩生日快樂 💎 ✨";
-  } else {
-    document.title = "驚喜籌備中... 🐨";
-    
-    const d = Math.floor(diff / (1000 * 60 * 60 * 24));
-    const h = Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
-    const m = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
-    const s = Math.floor((diff % (1000 * 60)) / 1000);
-    
-    document.getElementById('cd-d').textContent = d.toString().padStart(2, '0');
-    document.getElementById('cd-h').textContent = h.toString().padStart(2, '0');
-    document.getElementById('cd-m').textContent = m.toString().padStart(2, '0');
-    document.getElementById('cd-s').textContent = s.toString().padStart(2, '0');
-    lockScreen.style.display = 'flex';
-  }
-}
-
-function triggerBackdoor() {
-  let pw = prompt("✨ 開發人員特別通道 ✨\n請輸入跳過密碼進行網頁功能測試：");
-  if (pw === "0919") {
-    bypassLock = true;
-    lockScreen.style.display = 'none';
-    clearInterval(timerInterval);
-    document.title = "✨ 勁碩生日快樂 💎 ✨";
-    alert("密碼正確！已暫時解除時間鎖，祝測試順利 ❤️");
-  } else if (pw !== null) {
-    alert("密碼錯誤喔！請乖乖等待倒數結束～🐨");
-  }
-}
-
-checkTime();
-const timerInterval = setInterval(checkTime, 1000);
+document.title = "✨ 勁碩生日快樂 💎 ✨";
 
 /* ── STARFIELD ── */
 (function(){
@@ -714,7 +608,16 @@ function typeStory(){
   const el = document.getElementById('story-text');
   el.textContent = '';
   let i = 0;
-  function t(){ if(i<STORY.length){ el.textContent+=STORY.charAt(i++); setTimeout(t,45); } else { document.getElementById('story-next').style.display='inline-block'; } }
+  function t(){ 
+    if(i <= STORY.length){ 
+      // 改用 slice 語法安全切片，遇到 Emoji 絕對不會斷掉卡死
+      el.textContent = STORY.slice(0, i); 
+      i++;
+      setTimeout(t, 45); 
+    } else { 
+      document.getElementById('story-next').style.display='inline-block'; 
+    } 
+  }
   t();
 }
 
@@ -733,7 +636,7 @@ const ALL_QUESTIONS = [
   { group:'LE SSERAFIM', type:'成員知識', question:'LE SSERAFIM 兩位日本成員分別是誰？', options:['Kazuha&Yunjin','Kazuha&Sakura','Yunjin&Sakura','Sakura&Eunchae'], answer:1 },
   { group:'aespa', type:'歌曲辨認', question:'哪首是 Aespa 的出道曲？', options:['Next Level','Black Mamba','Savage','Drama'], answer:1 },
   { group:'aespa', type:'成員知識', question:'Aespa 哪位成員來自中國？', options:['Karina','Giselle','NingNing','Winter'], answer:2 },
-  { group:'IVE', type:'成員知識', question:'IVE 哪兩位成員曾收藏過 IZ*ONE 成員？', options:['Yujin & Rei','Wonyoung & Yujin','Liz & Leeseo','Rei & Wonyoung'], answer:1 },
+  { group:'IVE', type:'成員知識', question:'IVE 哪裝位成員曾收藏過 IZ*ONE 成員？', options:['Yujin & Rei','Wonyoung & Yujin','Liz & Leeseo','Rei & Wonyoung'], answer:1 },
   { group:'IVE', type:'歌曲辨認', question:'哪首是 IVE 的出道曲？', options:['LOVE DIVE','After LIKE','ELEVEN','I AM'], answer:2 }
 ];
 
@@ -915,7 +818,6 @@ function drawPhotoCard() {
   const btn = document.getElementById('pc-btn');
   const pcImg = document.getElementById('pc-img');
   
-  // ── 【動作 A】點擊「裝回袋子（收回）」時的邏輯 ──
   if (box.classList.contains('open')) {
     box.classList.remove('open');
     btn.textContent = "🎁 開拆下一包";
@@ -932,21 +834,17 @@ function drawPhotoCard() {
     collectedCards.add(prevIndex);
     document.getElementById('pc-status').textContent = `點擊盲盒開拆！(已收集: ${collectedCards.size} / ${PC_DATA.length})`;
 
-    // 如果全套 4 張都已經成功「裝回袋子」收入卡冊了
     if (collectedCards.size === PC_DATA.length) {
       setTimeout(() => {
         const continueBtn = document.getElementById('pc-continue-btn');
         continueBtn.style.display = 'block';
         continueBtn.classList.add('fade-up');
-        
-        // 【優化點】：按鈕亮起時，自動幫碩寶向上平滑捲動網頁，把按鈕完全推到視覺中央，絕對不會被底部橫幅蓋到！
         continueBtn.scrollIntoView({ behavior: 'smooth', block: 'center' });
       }, 500);
     }
     return;
   }
 
-  // ── 【動作 B】點擊「開拆盲盒」時的邏輯 ──
   const card = PC_DATA[currentCardIndex];
   
   pcImg.style.opacity = '0';
@@ -992,8 +890,7 @@ function gotoEncore(){
 function startConfetti(){
   const colors=['#c9a84c','#f0d080','#e8a0b4','#6ab0e8','#f5f0eb'];
   for(let i=0;i<80;i++){
-    setTimeout(()=>{
-      const c=document.createElement('div');
+    setTimeout(()=>{\n      const c=document.createElement('div');
       c.className='confetti-piece';
       c.style.left=Math.random()*100+'vw';
       c.style.background=colors[Math.floor(Math.random()*colors.length)];
